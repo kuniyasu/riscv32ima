@@ -9,10 +9,13 @@ CC      = gcc
 CVC     = ../bin/cvc64
 OBJ     = simv
 
-run : cvc
+RISCV_CC  = riscv32-unknown-elf-gcc
+RISCV_CPP = riscv32-unknown-elf-g++
+RISCV_LD  = riscv32-unknown-elf-ld
+
 
 elf32memory.o: ./elf32memory.c
-    $(CC) $(CFLAGS) -c ./tb.c
+    $(CC) $(CFLAGS) -c ./elf32memory.c
 
 elf32memory.so: elf32memory.o
     $(LD) $(LFLAGS) elf32memory.o -o elf32memory.so
