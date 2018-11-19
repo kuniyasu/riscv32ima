@@ -76,10 +76,15 @@ module top;
   end
 
   initial begin
-    $display("Hello Verilog World.");
+     nrst <= 1'b0;     
+     $display("Hello Verilog World.");
 
-    repeat(10) @(posedge clk);
-    $finish;
+     @(posedge clk);
+     nrst <= 1'b1;     
+
+     
+     repeat(10) @(posedge clk);
+     $finish;
   end
 
 endmodule

@@ -131,9 +131,9 @@ module riscv32ima_core (
 
     .wback_pc_wen(wback_pc_wen),
     .wback_pc(wback_pc),
-    .wback_reg_wen(wback_reg_wen),
-    .wback_reg_addr(wback_reg_addr),
-    .wback_reg_data(wback_reg_data),
+//    .wback_reg_wen(wback_reg_wen),
+//    .wback_reg_addr(wback_reg_addr),
+//    .wback_reg_data(wback_reg_data),
 
     .i_ncs(i_ncs),
     .i_nwe(i_nwe),
@@ -228,8 +228,8 @@ module riscv32ima_core (
     .lsu_mem_addr(lsu_mem_addr),
     .lsu_data(lsu_data),
 
-    .wback_pc_wen(wback_pc_wen),
-    .wback_pc(wback_pc),
+//    .wback_pc_wen(wback_pc_wen),
+//    .wback_pc(wback_pc),
     .wback_reg_wen(wback_reg_wen),
     .wback_reg_addr(wback_reg_addr),
     .wback_reg_data(wback_reg_data),
@@ -255,8 +255,8 @@ module riscv32ima_core (
     .lsu_mem_addr(lsu_mem_addr),
     .lsu_data(lsu_data),
 
-    .wback_pc_wen(wback_pc_wen),
-    .wback_pc(wback_pc),
+//    .wback_pc_wen(wback_pc_wen),
+//    .wback_pc(wback_pc),
     .wback_reg_wen(wback_reg_wen),
     .wback_reg_addr(wback_reg_addr),
     .wback_reg_data(wback_reg_data)

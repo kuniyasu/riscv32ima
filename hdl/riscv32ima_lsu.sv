@@ -19,8 +19,6 @@ module riscv32ima_lsu(
   lsu_mem_addr,
   lsu_data,
 
-  wback_pc_wen,
-  wback_pc,
   wback_reg_wen,
   wback_reg_addr,
   wback_reg_data,
@@ -94,8 +92,9 @@ output  reg [REG_ADDR_WIDTH-1:0]    lsu_reg_addr;
 output  reg [ADDR_WIDTH-1:0]        lsu_mem_addr;
 output  [REG_DATA_WIDTH-1:0]        lsu_data;
 
-input wback_pc_wen;
-input [ADDR_WIDTH-1:0] wback_pc;
+//input wback_pc_wen;
+//input [ADDR_WIDTH-1:0] wback_pc;
+
 input wback_reg_wen;
 input [REG_ADDR_WIDTH-1:0] wback_reg_addr;
 input [REG_DATA_WIDTH-1:0] wback_reg_data;
@@ -164,8 +163,8 @@ assign ready     = lsu_ready & d_stall;
 assign alu_ready = ready;
 
 
-assign d_ncs   = ((alu_opcode == STORE)&(alu_valid == 1'b1)&(wback_pc_wen!=1'b1))? 1'b0:1'b1;
-assign d_nws   = (alu_opcode == STORE)? 1'b0:1'b1;
+assign d_ncs   = ((alu_opcode == STORE)&(alu_valid == 1'b1))? 1'b0:1'b1;
+assign d_nwe   = (alu_opcode == STORE)? 1'b0:1'b1;
 assign d_addr  = {lsu_mem_addr[ADDR_WIDTH-1:3],3'b000};
 
 assign d_wmask = ((alu_func3_opcode == 3'b000)&(alu_mem_addr[2:0] == 3'b000))? {8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00}:

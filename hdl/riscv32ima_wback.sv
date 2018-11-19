@@ -10,8 +10,8 @@ module riscv32ima_wback(
   lsu_mem_addr,
   lsu_data,
 
-  wback_pc_wen,
-  wback_pc,
+//  wback_pc_wen,
+//  wback_pc,
   wback_reg_wen,
   wback_reg_addr,
   wback_reg_data
@@ -69,23 +69,19 @@ module riscv32ima_wback(
   input  [REG_DATA_WIDTH-1:0]   lsu_data;
 
 
-  output reg wback_pc_wen;
-  output reg [ADDR_WIDTH-1:0] wback_pc;
   output reg wback_reg_wen;
   output reg [REG_ADDR_WIDTH-1:0] wback_reg_addr;
   output reg [REG_DATA_WIDTH-1:0] wback_reg_data;
 
   always @(posedge clk) begin
     if( !nrst ) begin
-      wback_pc_wen <= 1'b0;
       wback_reg_wen <= 1'b0;
-    end else begin
+    end else if( lsu_valid == 1'b1 ) begin
       case( lsu_opcode )
         LOAD: begin
-          wback_pc_wen  <= 1'b0;
-
           wback_reg_wen <= 1'b1;
-          wback_reg_addr <= lsu_data;
+          wback_reg_addr <= lsu_reg_addr;
+	  wback_reg_data <= lsu_data;
         end
 
         /*
@@ -119,9 +115,9 @@ module riscv32ima_wback(
         */
 
         default: begin
-          wback_pc_wen  <= 1'b0;
           wback_reg_wen <= 1'b0;
         end
+	
       endcase
     end
   end

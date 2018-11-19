@@ -114,7 +114,11 @@ function [REG_DATA_WIDTH-1:0] deode_imm_data(input [REG_DATA_WIDTH:0] dt);
   endcase
 endfunction
 
+reg 			   ready;
+reg 			   status;
+   
 
+   
 reg  [REG_ADDR_WIDTH-1:0] read0_reg_addr;
 wire [REG_DATA_WIDTH-1:0] read0_reg_data;
 

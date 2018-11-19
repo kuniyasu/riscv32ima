@@ -10,9 +10,9 @@ module riscv32ima_fetch(
 
   wback_pc_wen,
   wback_pc,
-  wback_reg_wen,
-  wback_reg_addr,
-  wback_reg_data,
+//  wback_reg_wen,
+//  wback_reg_addr,
+//  wback_reg_data,
 
   i_ncs,
   i_nwe,
@@ -74,9 +74,9 @@ module riscv32ima_fetch(
 
   input wback_pc_wen;
   input [ADDR_WIDTH-1:0] wback_pc;
-  input wback_reg_wen;
-  input [REG_ADDR_WIDTH-1:0] wback_reg_addr;
-  input [REG_DATA_WIDTH-1:0] wback_reg_data;
+//  input wback_reg_wen;
+//  input [REG_ADDR_WIDTH-1:0] wback_reg_addr;
+//  input [REG_DATA_WIDTH-1:0] wback_reg_data;
 
   output i_ncs;
   output i_nwe;
@@ -132,7 +132,7 @@ module riscv32ima_fetch(
     end
   end
 
-  assign fetch_valid   = i_mem_read;
+  assign fetch_valid   = i_mem_read & wback_pc_wen;
   assign fetch_address = i_mem_addr;
   assign fetch_data    = ( nstall & !i_mem_read )? i_mem_rdata_buf : i_rdata;
 
