@@ -51,22 +51,20 @@ module top;
 
   memory imem(
     .clk(clk),
-    .ncs(i_ncs),
-    .nwe(i_nwe),
-    .addr(i_addr),
-    .wdata(i_wdata),
-    .wmask(i_wmask),
-    .rdata(i_rdata)
-  );
 
-  memory dmem(
-    .clk(clk),
-    .ncs(d_ncs),
-    .nwe(d_nwe),
-    .addr(d_addr),
-    .wdata(d_wdata),
-    .wmask(d_wmask),
-    .rdata(d_rdata)
+    .i_ncs(i_ncs),
+    .i_nwe(i_nwe),
+    .i_wdata(i_wdata),
+    .i_addr(i_addr),
+    .i_wmask(i_wmask),
+    .i_rdata(i_rdata),
+
+    .d_ncs(d_ncs),
+    .d_nwe(d_nwe),
+    .d_addr(d_addr),
+    .d_wdata(d_wdata),
+    .d_wmask(d_wmask),
+    .d_rdata(d_rdata)
     );
 
 
@@ -76,13 +74,13 @@ module top;
   end
 
   initial begin
-     nrst <= 1'b0;     
+     nrst <= 1'b0;
      $display("Hello Verilog World.");
 
      @(posedge clk);
-     nrst <= 1'b1;     
+     nrst <= 1'b1;
 
-     
+
      repeat(10) @(posedge clk);
      $finish;
   end

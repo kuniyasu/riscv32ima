@@ -1,37 +1,36 @@
 
 module riscv32ima_alu(
-clk,
-nrst,
+		clk,
+		nrst,
 
-dec_valid,
-dec_ready,
-dec_opcode,
-dec_func3_opcode,
-dec_func7_opcode,
-dec_src0_addr,
-dec_src1_addr,
-dec_dst_addr,
-dec_mem_addr,
-dec_src0_data,
-dec_src1_data,
-dec_imm_data,
+		dec_valid,
+		dec_ready,
+		dec_opcode,
+		dec_func3_opcode,
+		dec_func7_opcode,
+		dec_src0_addr,
+		dec_src1_addr,
+		dec_dst_addr,
+		dec_mem_addr,
+		dec_src0_data,
+		dec_src1_data,
+		dec_imm_data,
 
-alu_valid,
-alu_ready,
-alu_opcode,
-alu_func3_opcode,
-alu_src_addr,
-alu_dst_addr,
-alu_mem_addr,
-alu_data,
+		alu_valid,
+		alu_ready,
+		alu_opcode,
+		alu_func3_opcode,
+		alu_src_addr,
+		alu_dst_addr,
+		alu_mem_addr,
+		alu_data,
 
-wback_pc_wen,
-wback_pc,
-		      
-wback_reg_wen,
-wback_reg_addr,
-wback_reg_data
+		wback_pc_wen,
+		wback_pc,
 
+		wback_reg_wen,
+		wback_reg_addr,
+		wback_reg_data
 );
 
 parameter ADDR_WIDTH = 32;
@@ -76,12 +75,12 @@ parameter custom_3    = 7'b110_11_11;
 
 parameter BEQ = 3'b000;
 parameter BNE = 3'b001;
-parameter BLT = 3'b000;
-parameter BGE = 3'b001;
-parameter BLT = 3'b000;
-parameter BGE = 3'b001;
-   
-   
+parameter BLT = 3'b010;
+parameter BGE = 3'b011;
+parameter BLTU = 3'b100;
+parameter BGEU = 3'b101;
+
+
 input clk;
 input nrst;
 
@@ -110,123 +109,117 @@ output reg [REG_DATA_WIDTH-1:0]   alu_data;
 
 
 output wback_pc_wen;
-output [ADDR_WIDTH-1:0] wback_pc;
+output reg [ADDR_WIDTH-1:0] wback_pc;
 
 input wback_reg_wen;
 input [REG_ADDR_WIDTH-1:0] wback_reg_addr;
 input [REG_DATA_WIDTH-1:0] wback_reg_data;
 
-reg 			   pc_wen;
-   
+reg 	pc_wen;
+
 assign wback_pc_wen = pc_wen & alu_ready;
-   
 assign dec_ready = alu_ready;
 
 always @(posedge clk) begin
   if( !nrst ) begin
      alu_valid <= 1'b0;
      pc_wen    <= 1'b0;
+
   end else if ( pc_wen ) begin
      alu_valid <= 1'b0;
-     pc_wen    <= 1'b0;     
+     pc_wen    <= 1'b0;
+
   end else if( dec_ready  ) begin
     alu_valid <= dec_valid;
     alu_opcode <= dec_opcode;
     alu_func3_opcode <= dec_func3_opcode;
     alu_dst_addr     <= dec_dst_addr;
 
-    if( dec_valid ) begin
-       case( dec_opcode )
-	 
-	 /*
-	  LOAD: begin
-          alu_src_addr;
-          alu_mem_addr;
-          alu_data;
-          end
+    case( dec_opcode )
+		 /*
+		  LOAD: begin
+	          alu_src_addr;
+	          alu_mem_addr;
+	          alu_data;
+	          end
 
-	  LOAD_FP:;
-	  custom_0:;
-	  MISC_MEM:;
-	  OP_IMM:;
-	  AUIPC:;
-	  OP_IMM_32:;
-	  STORE:;
-	  STORE_FP:;
-	  custom_1:;
-	  AMO:;
-	  OP:;
-	  LUI:;
-	  OP_32:;
-	  MADD:;
-	  MSUB:;
-	  NMSUB:;
-	  NMADD:;
-	  OP_FP:;
-	  reserved_0:;
-	  custom_2:;
-	  */
-	 
-	 BRANCH: begin
-	    case( alu_func3_code )
-	      BEQ: begin
-		 wback_pc_wen <= ( $sign(dec_src0_data) == $sign(dec_src1_data) )? 1'b1:1'b0;
-		 wback_pc[ADDR_WIDTH-1:0] <= $sign({1'b0,dec_mem_addr}) + $sign(dec_imm_data);
-	      end
+		  LOAD_FP:;
+		  custom_0:;
+		  MISC_MEM:;
+		  OP_IMM:;
+		  AUIPC:;
+		  OP_IMM_32:;
+		  STORE:;
+		  STORE_FP:;
+		  custom_1:;
+		  AMO:;
+		  OP:;
+		  LUI:;
+		  OP_32:;
+		  MADD:;
+		  MSUB:;
+		  NMSUB:;
+		  NMADD:;
+		  OP_FP:;
+		  reserved_0:;
+		  custom_2:;
+		  */
 
-	      BNE: begin
-		 wback_pc_wen <= ( $sign(dec_src0_data) != $sign(dec_src1_data) )? 1'b1:1'b0;
-		 wback_pc[ADDR_WIDTH-1:0] <= $sign({1'b0,dec_mem_addr}) + $sign(dec_imm_data);
-	      end
+		 BRANCH: begin
+		 		wback_pc[ADDR_WIDTH-1:0] <= $signed({1'b0,dec_mem_addr}) + $signed(dec_imm_data);
 
-	      BLT: begin
-		 wback_pc_wen <= ( $sign(dec_src0_data) < $sign(dec_src1_data) )? 1'b1:1'b0;
-		 wback_pc[ADDR_WIDTH-1:0] <= $sign({1'b0,dec_mem_addr}) + $sign(dec_imm_data);
-	      end
+		    case( alu_func3_opcode )
+		      BEQ: if( $signed(dec_src0_data) == $signed(dec_src1_data) ) begin
+						 pc_wen <= dec_valid;
+		      end
 
-	      BGE: begin
-		 wback_pc_wen <= ( $sign(dec_src0_data) >= $sign(dec_src1_data) )? 1'b1:1'b0;
-		 wback_pc[ADDR_WIDTH-1:0] <= $sign({1'b0,dec_mem_addr}) + $sign(dec_imm_data);
-	      end
+		      BNE: if ( $signed(dec_src0_data) != $signed(dec_src1_data) ) begin
+						 pc_wen <= dec_valid;
+		      end
 
-	      BLTU: begin
-		 wback_pc_wen <= ( dec_src0_data < dec_src1_data )? 1'b1:1'b0;
-		 wback_pc[ADDR_WIDTH-1:0] <= $sign({1'b0,dec_mem_addr}) + $sign(dec_imm_data);
-	      end
+		      BLT: if( $signed(dec_src0_data) < $signed(dec_src1_data) )begin
+						 pc_wen <= dec_valid;
+		      end
 
-	      BGEU: begin
-		 wback_pc_wen <= ( dec_src0_data >= dec_src1_data )? 1'b1:1'b0;
-		 wback_pc[ADDR_WIDTH-1:0] <= $sign({1'b0,dec_mem_addr}) + $sign(dec_imm_data);
-	      end
-	      
-	      default : begin
+		      BGE: if( $signed(dec_src0_data) >= $signed(dec_src1_data) ) begin
+						 pc_wen <= dec_valid;
+		      end
 
-	      end
-	    endcase
-	 end
-	 
-	 JALR: begin
-	    pc_wen <= 1'b1;
-	    wback_pc[ADDR_WIDTH-1:0] <= $sign({1'b0,dec_mem_addr}) + $sign(dec_imm_data);
-	 end
-	 
-	 //reserved_1:;
-	 JAL: begin
-	    pc_wen <= 1'b1;
-	    wback_pc[ADDR_WIDTH-1:0] <= $sign({1'b0,dec_mem_addr}) + $sign(dec_imm_data);
-	 end
-	 
-	 /*
-	  SYSTEM:;
-	  reserved_2:;
-	  custom_3:;
-	  */
+		      BLTU: if ( dec_src0_data < dec_src1_data ) begin
+						 pc_wen <= dec_valid;
+		      end
 
-	 default: begin 
-	    pc_wen <= 1'b0;
-	 end	 
-       endcase // case ( dec_opcode )
-    end
+		      BGEU: if ( dec_src0_data >= dec_src1_data ) begin
+						 pc_wen <= dec_valid;
+		      end
+
+		      default : begin
+						pc_wen <= 1'b0;
+		      end
+		    endcase
+		 end
+
+		 JALR: begin
+		    pc_wen <= dec_valid;
+		    wback_pc[ADDR_WIDTH-1:0] <= $signed({1'b0,dec_mem_addr}) + $signed(dec_imm_data);
+		 end
+
+		 //reserved_1:;
+		 JAL: begin
+		    pc_wen <= dec_valid;
+		    wback_pc[ADDR_WIDTH-1:0] <= $signed({1'b0,dec_mem_addr}) + $signed(dec_imm_data);
+		 end
+
+		 /*
+		  SYSTEM:;
+		  reserved_2:;
+		  custom_3:;
+		  */
+
+		 default: begin
+		    pc_wen <= 1'b0;
+		 end
+   endcase // case ( dec_opcode )
   end
 end
 
